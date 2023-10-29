@@ -35,6 +35,7 @@
 		03C429012AEDC6290041A768 /* vorbisenc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03C428E82AEDC6280041A768 /* vorbisenc.framework */; };
 		03C429022AEDC6290041A768 /* vorbisenc.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 03C428E82AEDC6280041A768 /* vorbisenc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		03EE0B552AEDDB6E003FAB35 /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03EE0B532AEDDB6E003FAB35 /* Particle.cpp */; };
+		03EE0B582AEE09EE003FAB35 /* Vec2f.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03EE0B562AEE09EE003FAB35 /* Vec2f.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -107,6 +108,8 @@
 		03C428E82AEDC6280041A768 /* vorbisenc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vorbisenc.framework; path = ../../../../../Library/Frameworks/vorbisenc.framework; sourceTree = "<group>"; };
 		03EE0B532AEDDB6E003FAB35 /* Particle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Particle.cpp; sourceTree = "<group>"; };
 		03EE0B542AEDDB6E003FAB35 /* Particle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Particle.hpp; sourceTree = "<group>"; };
+		03EE0B562AEE09EE003FAB35 /* Vec2f.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Vec2f.cpp; sourceTree = "<group>"; };
+		03EE0B572AEE09EE003FAB35 /* Vec2f.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vec2f.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +160,8 @@
 				03EE0B532AEDDB6E003FAB35 /* Particle.cpp */,
 				03EE0B542AEDDB6E003FAB35 /* Particle.hpp */,
 				03C428CA2AEDC2340041A768 /* readme.txt */,
+				03EE0B562AEE09EE003FAB35 /* Vec2f.cpp */,
+				03EE0B572AEE09EE003FAB35 /* Vec2f.hpp */,
 			);
 			path = LiquidSim;
 			sourceTree = "<group>";
@@ -257,6 +262,7 @@
 			files = (
 				031ED8FB2AEDBA7500E4D00F /* main.cpp in Sources */,
 				03EE0B552AEDDB6E003FAB35 /* Particle.cpp in Sources */,
+				03EE0B582AEE09EE003FAB35 /* Vec2f.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

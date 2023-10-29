@@ -8,11 +8,10 @@
 #include "Particle.hpp"
 
 Particle::Particle() {
-    x = 0.0;
-    y = 0.0;
+    Particle(0.0, 0.0);
 }
     
 Particle::Particle(float _x, float _y) {
-    x = _x;
-    y = _y;
+    position.x = _x;
+    position.y = _y;
 }
