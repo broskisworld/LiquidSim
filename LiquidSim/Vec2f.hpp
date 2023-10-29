@@ -19,6 +19,7 @@ public:
     using Vector2::Vector2;
     Vec2f(const Vector2<float>& other) : Vector2<float>(other) {};
     float length();
+    Vec2f normalized();
 };
 
 #endif /* Vec2f_hpp */

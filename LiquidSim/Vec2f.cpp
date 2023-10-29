@@ -10,3 +10,7 @@
 float Vec2f::length() {
     return sqrt((x * x) + (y * y));
 }
+
+Vec2f Vec2f::normalized() {
+    return Vec2f(*this) / sqrt((x * x) + (y * y));
+}

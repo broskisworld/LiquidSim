@@ -19,7 +19,9 @@ public:
     Vec2f velocity;
     Vec2f acceleration;
     Vec2f appliedForce;
-    Vec2f density;
+    Vec2f gradient;
+    float density;
+    float pressure;
     
     Particle();
     Particle(float _x, float _y);

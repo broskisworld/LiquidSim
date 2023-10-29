@@ -16,14 +16,20 @@ using sf::FloatRect;
 int renderFrame();
 void drawParticleGrid(int numParticles, float particleSpacing);
 float smoothingFunction(Vec2f vector, float smoothingRadius);
+float smoothingFunctionDerivative(Vec2f vector, float smoothingRadius);
+Vec2f calculateGradientForPoint(Vec2f point);
+float calculateDensityForPoint(Vec2f point);
 void handleCollisions();
+float convertDensityToPressure(float density);
 
 /* PHYSICS CONSTANTS */
 const float COLLISION_DAMPER = 0.90f;
 const float INFLUENCE_RADIUS = 60.0f;
 const Vec2f GRAVITY_ACCELERATION = Vec2f(0.0, 10000.0f);
-const float NEAR_PARTICLE_FORCE = 20000000.0f;
+const float NEAR_PARTICLE_FORCE = 20000.0f;
 const float PARTICLE_MASS = 1.0f;
+const float TARGET_DENSITY = 0.1f;
+const float PRESSURE_MULTIPLIER = 0.1f;
 
 /* PARTICLE SETUP - 20 big */
 const float PARTICLE_SIZE = 4.0f;
@@ -36,7 +42,7 @@ sf::Time deltaFrame;
 sf::Rect<float> windowBox;
 
 /* WINDOW */
-sf::RenderWindow window(sf::VideoMode(800, 600), "Liquid Sim");
+sf::RenderWindow window(sf::VideoMode(800, 600, 32), "Liquid Sim", sf::Style::Default, sf::ContextSettings(0, 0, 1, 1, 1, 0, false));
 sf::Clock gameClock;
 sf::Clock fpsClock;
 sf::Clock frameClock;
@@ -49,6 +55,8 @@ int main()
     int loopIteration = 0;
  
     cout << "Game starting...\n";
+    
+    window.setFramerateLimit(60);
     
     drawParticleGrid(NUM_PARTICLES, PARTICLE_RADIUS * 2.0f);
     
@@ -110,8 +118,47 @@ int main()
 int renderFrame() {
     windowBox = FloatRect(0.0f, 0.0f, window.getSize().x, window.getSize().y);
     
+    for(int i = 0; i < 80; i++) {
+        for(int j = 0; j < 60; j++) {
+            sf::RectangleShape pixel(Vec2f(10.0, 10.0));
+            // float gradientMagnitude = calculateGradientForPoint(Vec2f(((float)i * 10.0f) + 5.0f, ((float)j * 10.0f) + 5.0f)).length();
+            float gradientMagnitude = calculateDensityForPoint(Vec2f(((float)i * 10.0f) + 5.0f, ((float)j * 10.0f) + 5.0f));
+            pixel.setPosition(Vec2f((float)i * 10.0f, (float)j * 10.0f));
+            const float gradientMultiplier = 64000.0f;
+            float rgbVal = clamp(gradientMagnitude * gradientMultiplier, 0.0f, 255.0f);
+            pixel.setFillColor(sf::Color(rgbVal, rgbVal, rgbVal));
+            window.draw(pixel);
+        }
+    }
+    
     for(int i = 0; i < particles.size(); i++) {
         particles[i].appliedForce = Vec2f(0.0, 0.0);
+    }
+    
+    // Calculate particle density
+    for(int i = 0; i < particles.size(); i++) {
+        particles[i].density = 0.0f;
+        for(int j = 0; j < particles.size(); j++) {
+            if(i == j) continue;
+            
+            Vec2f difference = particles[i].position - particles[j].position;
+            if(difference.length() < INFLUENCE_RADIUS) {
+                particles[i].density += smoothingFunction(difference, INFLUENCE_RADIUS) * PARTICLE_MASS;
+            }
+        }
+    }
+    
+    // Calculate gradient
+    for(int i = 0; i < particles.size(); i++) {
+        particles[i].gradient = Vec2f(0.0f, 0.0f);
+        for(int j = 0; j < particles.size(); j++) {
+            if(i == j) continue;
+            
+            Vec2f difference = particles[i].position - particles[j].position;
+            if(difference.length() < INFLUENCE_RADIUS) {
+                particles[i].gradient += difference.normalized() * (smoothingFunctionDerivative(difference, INFLUENCE_RADIUS) * PARTICLE_MASS / particles[i].density);
+            }
+        }
     }
     
     // Apply forces from nearby particles by adding acceleration
@@ -120,10 +167,9 @@ int renderFrame() {
             if(i == j) continue;
             
             Vec2f difference = particles[i].position - particles[j].position;
-            float dist = sqrt(pow(difference.x, 2) + pow(difference.y, 2));
-            if(dist < INFLUENCE_RADIUS) {
-//                Vec2f nearParticleForce = (difference / dist) * (float)(pow(((INFLUENCE_RADIUS - dist) / INFLUENCE_RADIUS), 3) * NEAR_PARTICLE_FORCE * PARTICLE_MASS);
-                Vec2f nearParticleForce = (difference / dist) * (smoothingFunction(difference, INFLUENCE_RADIUS) * NEAR_PARTICLE_FORCE * PARTICLE_MASS);
+            if(difference.length() < INFLUENCE_RADIUS) {
+                // Vec2f nearParticleForce = (difference / dist) * (float)(pow(((INFLUENCE_RADIUS - dist) / INFLUENCE_RADIUS), 3) * NEAR_PARTICLE_FORCE * PARTICLE_MASS);
+                Vec2f nearParticleForce = difference.normalized() * ((smoothingFunction(difference, INFLUENCE_RADIUS) * NEAR_PARTICLE_FORCE * PARTICLE_MASS) / particles[i].density);
                 particles[i].appliedForce += nearParticleForce;
                 particles[j].appliedForce += -nearParticleForce;
             }
@@ -137,7 +183,7 @@ int renderFrame() {
         sf::CircleShape shape(PARTICLE_RADIUS);
         float pressureGradient = clamp(particles[i].appliedForce.length() / NEAR_PARTICLE_FORCE, 0.0f, 1.0f);
         if(pressureGradient == 1.0f) {
-            shape.setFillColor(sf::Color::White);
+            shape.setFillColor(sf::Color::Magenta);
         } else {
             shape.setFillColor(sf::Color(50 + (int)(pressureGradient * 200.0f), 50, 50 + (int)((1.0f - pressureGradient) * 200.0f)));
         }
@@ -168,8 +214,52 @@ void drawParticleGrid(int numParticles, float particleSpacing) {
 }
 
 float smoothingFunction(Vec2f vector, float smoothingRadius) {
-//    return pow(((smoothingRadius - vector.length()) / smoothingRadius), 3);
-    return (10 * M_1_PI) * pow(smoothingRadius - vector.length(), 3) * (1/pow(smoothingRadius, 5));
+    // return pow(((smoothingRadius - vector.length()) / smoothingRadius), 3);
+    return (10 * M_1_PI) * pow(smoothingRadius - vector.length(), 3) * (1 / pow(smoothingRadius, 5));
+}
+
+float smoothingFunctionDerivative(Vec2f vector, float smoothingRadius) {
+    return -3 * (10 * M_1_PI) * pow(smoothingRadius - vector.length(), 2) * (1 / pow(smoothingRadius, 5));
+}
+
+Vec2f calculateGradientForPoint(Vec2f point) {
+    Vec2f gradient = Vec2f(0.0f, 0.0f);
+    
+    for(int i = 0; i < particles.size(); i++) {
+        Vec2f difference = point - particles[i].position;
+        if(difference.length() < INFLUENCE_RADIUS) {
+            gradient += difference.normalized() * (smoothingFunctionDerivative(difference, INFLUENCE_RADIUS) * PARTICLE_MASS / particles[i].density);
+        }
+    }
+    
+    return gradient;
+}
+
+float calculateDensityForPoint(Vec2f point) {
+    float density = 0.0f;
+    int numPointsWithinInfluenceRadius = 0;
+    
+    for(int i = 0; i < particles.size(); i++) {
+        Vec2f difference = point - particles[i].position;
+        if(difference.length() < INFLUENCE_RADIUS) {
+            numPointsWithinInfluenceRadius++;
+            if((smoothingFunction(difference, INFLUENCE_RADIUS) * PARTICLE_MASS) < 0.0f) {
+                cout << "Density component is negative.";
+            }
+            density += smoothingFunction(difference, INFLUENCE_RADIUS) * PARTICLE_MASS;
+            if(density == 0.0f) {
+                cout << "Density at point (" << point.x << "," << point.y << ") is zero even though it has " << numPointsWithinInfluenceRadius << " number of points within it's radius of influence" << endl;
+            }
+        }
+    }
+    
+    return density;
+}
+
+float convertDensityToPressure(float density) {
+    float densityError = TARGET_DENSITY - density;
+    float pressure = densityError * PRESSURE_MULTIPLIER;
+    return pressure;
 }
 
 void handleCollisions() {
@@ -181,7 +271,9 @@ void handleCollisions() {
         particles[i].acceleration += particles[i].appliedForce;
         
         // Calculate velocity from acceleration
-        particles[i].velocity += particles[i].acceleration * (float) deltaFrame.asSeconds();
+        particles[i].velocity += (particles[i].acceleration * (float) deltaFrame.asSeconds());
+        particles[i].position += (particles[i].velocity * (float) deltaFrame.asSeconds());
+//        particles[i].position += ((0.5f) * particles[i].acceleration * (float) deltaFrame.asSeconds() * (float) deltaFrame.asSeconds());
         particles[i].position += particles[i].velocity * (float) deltaFrame.asSeconds();
         
         if(!windowBox.contains(particles[i].position)) {
