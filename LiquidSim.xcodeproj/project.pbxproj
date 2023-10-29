@@ -34,6 +34,7 @@
 		03C429002AEDC6290041A768 /* vorbis.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 03C428E72AEDC6280041A768 /* vorbis.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		03C429012AEDC6290041A768 /* vorbisenc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03C428E82AEDC6280041A768 /* vorbisenc.framework */; };
 		03C429022AEDC6290041A768 /* vorbisenc.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 03C428E82AEDC6280041A768 /* vorbisenc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		03EE0B552AEDDB6E003FAB35 /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03EE0B532AEDDB6E003FAB35 /* Particle.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -91,7 +92,6 @@
 		03C428CD2AEDC4570041A768 /* libsfml-window.2.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsfml-window.2.6.0.dylib"; path = "../../../../../usr/local/lib/libsfml-window.2.6.0.dylib"; sourceTree = "<group>"; };
 		03C428CE2AEDC4570041A768 /* libsfml-network.2.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsfml-network.2.6.0.dylib"; path = "../../../../../usr/local/lib/libsfml-network.2.6.0.dylib"; sourceTree = "<group>"; };
 		03C428CF2AEDC4570041A768 /* libsfml-graphics.2.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsfml-graphics.2.6.0.dylib"; path = "../../../../../usr/local/lib/libsfml-graphics.2.6.0.dylib"; sourceTree = "<group>"; };
-		03C428D52AEDC54F0041A768 /* LiquidSim.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LiquidSim.entitlements; sourceTree = "<group>"; };
 		03C428DC2AEDC6280041A768 /* freetype.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = freetype.framework; path = ../../../../../Library/Frameworks/freetype.framework; sourceTree = "<group>"; };
 		03C428DD2AEDC6280041A768 /* sfml-audio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "sfml-audio.framework"; path = "../../../../../Library/Frameworks/sfml-audio.framework"; sourceTree = "<group>"; };
 		03C428DE2AEDC6280041A768 /* vorbisfile.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vorbisfile.framework; path = ../../../../../Library/Frameworks/vorbisfile.framework; sourceTree = "<group>"; };
@@ -105,8 +105,8 @@
 		03C428E62AEDC6280041A768 /* SFML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SFML.framework; path = ../../../../../Library/Frameworks/SFML.framework; sourceTree = "<group>"; };
 		03C428E72AEDC6280041A768 /* vorbis.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vorbis.framework; path = ../../../../../Library/Frameworks/vorbis.framework; sourceTree = "<group>"; };
 		03C428E82AEDC6280041A768 /* vorbisenc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vorbisenc.framework; path = ../../../../../Library/Frameworks/vorbisenc.framework; sourceTree = "<group>"; };
-		03C429032AEDC6A70041A768 /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
-		03EE0B522AEDC98B003FAB35 /* Arial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Arial.ttf; sourceTree = "<group>"; };
+		03EE0B532AEDDB6E003FAB35 /* Particle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Particle.cpp; sourceTree = "<group>"; };
+		03EE0B542AEDDB6E003FAB35 /* Particle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Particle.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,10 +153,9 @@
 		031ED8E42AEDB8D200E4D00F /* LiquidSim */ = {
 			isa = PBXGroup;
 			children = (
-				03EE0B522AEDC98B003FAB35 /* Arial.ttf */,
-				03C429032AEDC6A70041A768 /* test.jpg */,
-				03C428D52AEDC54F0041A768 /* LiquidSim.entitlements */,
 				031ED8FA2AEDBA7500E4D00F /* main.cpp */,
+				03EE0B532AEDDB6E003FAB35 /* Particle.cpp */,
+				03EE0B542AEDDB6E003FAB35 /* Particle.hpp */,
 				03C428CA2AEDC2340041A768 /* readme.txt */,
 			);
 			path = LiquidSim;
@@ -257,6 +256,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				031ED8FB2AEDBA7500E4D00F /* main.cpp in Sources */,
+				03EE0B552AEDDB6E003FAB35 /* Particle.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
